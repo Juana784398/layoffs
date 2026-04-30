@@ -19,10 +19,10 @@ The dataset comprises 9 columns categorized into:
 
 ## Project Documentation
 Detailed scripts document the iterative development process, including validation steps and inline commentary: 
-* **[Data Cleaning Script:](./layoffs_data_cleaning.sql)**  Final production code for data standardization
-* **[EDA Script:](./layoffs_eda.sql)** Comprehensive analytical queries for trend discovery.
-* **[Cleaning Working Notes:](./layoffs_data_cleaning_working_notes.sql)** Step-by-step development and validation logic.
-* **[EDA Working Notes:](./layoffs_eda_working_notes.sql)** Analytical thought process and exploratory draft queries
+* **[Data Cleaning Script:](scripts/layoffs_data_cleaning.sql)**  Final production code for data standardization
+* **[EDA Script:](scripts/layoffs_eda.sql)** Comprehensive analytical queries for trend discovery.
+* **[Cleaning Working Notes:](scripts/layoffs_data_cleaning_working_notes.sql)** Step-by-step development and validation logic.
+* **[EDA Working Notes:](scripts/layoffs_eda_working_notes.sql)** Analytical thought process and exploratory draft queries
 
 
 
