@@ -1,7 +1,7 @@
 # World Layoffs Analysis (2020-2023) - SQL Data Exploration
 
 ## Project Overview  
-This project analyzes global layoffs from 2020–2023 using SQL to uncover patterns in industry volatility, company-level impact, and geographic concentration during major economic disruption periods.
+This project analyzes global layoffs from 2020-2023 using SQL to uncover patterns in industry volatility, company-level impact, and geographic concentration during major economic disruption periods.
 
 The focus is on transforming raw, inconsistent data into a structured analytical dataset and extracting actionable business insights using SQL-based exploratory analysis.
 
