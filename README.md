@@ -1,158 +1,95 @@
-# World Layoffs: Data Cleaning & Exploratory Data Analysis
+# World Layoffs Analysis (2020-2023) - SQL Data Exploration
 
-## Project Overview
+## Project Overview  
+This project analyzes global layoffs from 2020–2023 using SQL to uncover patterns in industry volatility, company-level impact, and geographic concentration during major economic disruption periods.
 
-This project follows end-to-end data lifecycle of `layoffs` dataset using `MySQL`. Raw, inconsistent data was transformed into a structured format followed by Exploratory Data Analysis (EDA) to uncover key economic trends and sector-level volatility between 2020 and 2023.
+The focus is on transforming raw, inconsistent data into a structured analytical dataset and extracting actionable business insights using SQL-based exploratory analysis.
 
+
+## Key Insights
+
+- 2022 recorded the highest layoff volume, indicating a delayed economic correction following the initial COVID-era disruption.  
+- Consumer and Retail sectors experienced the highest overall layoffs, while major Tech firms dominated individual layoff events.  
+- Amazon recorded the highest cumulative layoffs (~18,150), followed by Google, Meta, Salesforce, and Microsoft.  
+- Google recorded the largest single-day layoff event (~12,000 employees).  
+- Layoffs were heavily concentrated in major tech hubs, with a small number of cities contributing a disproportionate share of national totals.  
+- 116 companies experienced 100% workforce reductions, indicating full shutdowns despite substantial funding and capital backing.  
 
 ## Tools & Skills
-* **Database:** MySQL Workbench
-* **SQL Techniques:** Staging Tables, CTEs, Window Functions (`ROW_NUMBER`, `DENSE_RANK`), Self-Joins, Temporary Tables, String Manipulation, Data Type Casting.
-* **Analysis:** Time-Series Analysis, Hierarchical Aggregation, Sector Concentration, Data Integrity Validation.
+
+- SQL (MySQL Workbench)
+- Data Cleaning & Standardization  
+- Exploratory Data Analysis (EDA)  
+- Window Functions (ROW_NUMBER, DENSE_RANK)  
+- CTEs & Temporary Tables  
+- Time-Series Analysis  
+- Data Aggregation & Ranking  
+
+## Project Assets
+
+* [Data Cleaning Script](scripts/layoffs_data_cleaning.sql) - Final code for data cleaning and standardization 
+* [EDA Script](scripts/layoffs_eda.sql) - Final exploratory analysis queries and trend analysis  
+* [Cleaning Working Notes](scripts/layoffs_data_cleaning_working_notes.sql) - Iterative validation and development queries  
+* [EDA Working Notes](scripts/layoffs_eda_working_notes.sql) - Draft analysis queries and exploratory workflow  
 
 
-## Data Structure
-The dataset comprises of 9 columns categorized into:
-* **Corporate Identifiers:** `company`, `industry`, `stage`, `funds_raised_millions`
-* **Geographic Markers:** `location`, `country`
-* **Layoff Metrics & Timeline:** `total_laid_off`, `percentage_laid_off`, `date`
+## Dataset
 
-## Project Documentation
-Detailed scripts document the iterative development process, including validation steps and inline commentary. These were used to track decisions and verify results throughout the project.
-* **[Data Cleaning Script:](scripts/layoffs_data_cleaning.sql)**  Final code used to clean and standardize the dataset.
-* **[EDA Script:](scripts/layoffs_eda.sql)** SQL queries used to explore trends and generate insights.
-* **[Cleaning Working Notes:](scripts/layoffs_data_cleaning_working_notes.sql)** Step-by-step Iterative queries and validation steps during data cleaning development.
-* **[EDA Working Notes:](scripts/layoffs_eda_working_notes.sql)** Exploratory draft queries and notes capturing the analysis process
+The dataset contains layoffs data with 9 columns categorized into:
+* **Company metadata:** `company`, `industry`, `stage`, `funds_raised_millions`
+* **Geographic markers:** `location`, `country`
+* **Layoff metrics:** `total_laid_off`, `percentage_laid_off`
+* **Timeline:** `date` 
 
 
+## Analysis Approach
 
-## Part 1: Data Cleaning Workflow
-
-### Summary
-* **De-duplication:** Identified and removed duplicates using Window Functions and a secondary staging table.
-* **Standardization:** Unified industry labels and cleaned up inconsistent string values.
-* **Type Casting:** Converted `date` column from `TEXT` to `DATE` format using `STR_TO_DATE()`.
-* **Imputation:** Used self-joins on company names to populate missing industry values where possible.
----
-
-### Detailed Process
-
-<details>
-<summary><b>1. Staging and De-duplication</b></summary>
-
-A staging environment was created to protect the raw source data. Since the dataset lacked a unique primary key, a **CTE** and **Window Function** identified duplicates by partitioning across all columns.
-
-**Technical Choice:** A secondary staging table with a `row_num` column was to facilitate the removal of duplicates, as MySQL does not support direct `DELETE` operations on CTEs.
-
-**Action:** Populated `layoffs_staging2` and filtered out rows where `row_num > 1`.
-</details>
-
-<details>
-<summary><b>2. Standardization & Type Casting</b></summary>
-
-* **Trimming:** Removed leading and trailing whitespace from text fields.
-* **Consolidation:** Merged inconsistent labels (e.g., 'Crypto Currency' and 'Cryptocurrency' --> 'Crypto').
-* **Data Typing:** Converted the `date` column from `TEXT` to `DATE` using `STR_TO_DATE()` to enable time-series analysis.
-</details>
-
-<details>
-<summary><b>3. Handling Nulls and Data Imputation</b></summary>
-
-**Self-joins** were used to populate missing `industry` records. By joining the table to itself on the `company` name, missing values were filled using existing entries from the same company.
-</details>
-
-<details>
-<summary><b>4. Final Pruning</b></summary>
-
-Removed records where both `total_laid_off` and `percentage_laid_off` were `NULL`, as they provided no actionable insight for analysis.
-</details>
-
-## Part 2: Exploratory Analysis Workflow
-### Summary
-* **Macro Analysis:** Identified dataset boundaries, major layoff events, and company shutdowns.
-* **Categorical Analysis:** Aggregated layoffs across company, industry, country, and funding stage.
-* **Time-Series Analysis:** Analyzed yearly and monthly trends, including rolling totals.
-* **Ranking Analysis:** Identified top companies and industries with most layoffs per year using window functions.
-* **Geographic Analysis:** Examined how cities contributed to overall country-level layoffs.
-* **Sector Analysis:** Analyzed industry concentration within the most affected countries.
-
-### Detailed Process
-<details>
-<summary><b>1. Macro-Level Discovery & Outliers</b></summary>
-
-Started by exploring the dataset to understand its structure, range and identify extreme values.
-
-* Identified the largest single layoff events and full company shutdowns.
-* Analyzed companies with 100% workforce reductions to identify failed startups
-</details>
-
-<details>
-<summary><b>2. Categorical Aggregations</b></summary>
-
-Aggregated layoffs across key business dimensions to understand where the impact was most significant.
-* **Company-Level:** Identified companies with the highest total layoffs
-* **Industry-Level:** Highlighted the most affected sectors
-* **Country-Level:** Compared impact across countries
-* **Funding Stage:** Analyzed layoffs across different stages of company growth
-</details>
-
-<details>
-<summary><b>3. Time-Series Analysis & Trend Identification</b></summary>
-
-Analyzed temporal patterns to uncover trends and cycles in layoffs.
-* Determined dataset timeframe (2020–2023)
-* Compared yearly totals to identify peak periods
-* Calculated monthly rolling totals using CTEs and window functions to visualize cumulative trends
-</details>
-
-<details>
-<summary><b>4. Competitive Ranking (Advanced Window Functions)</b></summary>
-
-Used `DENSE_RANK()` to identify top-performing entities within each year.
-* Ranked top 5 companies by layoffs per year
-* Ranked top 5 industries by layoffs per year
-* Enabled year-over-year comparison of major contributors
-</details>
-
-<details>
-<summary><b>5. Geographic Contribution Analysis</b></summary>
-
-Analyzed how individual locations contribute to national layoff totals.
-* Calculated total layoffs per country and per city
-* Measured each city's percentage contribution to its country’s total
-* Highlighted regional concentration within high-impact countries
-</details>
-
-<details>
-<summary><b>6. Sector Concentration within Top Countries</b></summary>
-
-Focused analysis on the top 10 most affected countries.
-* Isolated top countries by total layoffs
-* Analyzed which industries contributed most within each country
-* Calculated industry share as a percentage of national totals
-</details>
-
-<details>
-<summary><b>7. Methodological Notes & Limitations</b></summary>
-
-The `percentage_laid_off` column was not used for aggregate analysis due to lack of total workforce data, which can lead to misleading interpretations.
-
-Analysis focused primarily on `total_laid_off` to ensure more reliable and comparable insights.
-</details>
+### 1. Data Cleaning & Standardization
+- Removed duplicate records using window functions  
+- Standardized industry naming inconsistencies  
+- Converted date fields into proper SQL `DATE` format  
+- Imputed missing industry values using self-joins  
+- Removed rows with no usable layoff data  
 
 
-## Final Result
-The dataset was cleaned and standardized, then used to analyze key trends in global layoffs between 2020 and 2023. The final output includes a ready-to-use dataset (`layoffs_staging2`) and a set of analytical SQL queries.
+### 2. Exploratory Analysis
+
+#### Macro-Level Analysis
+- Identified extreme events (largest layoffs, full company shutdowns)  
+- Measured overall distribution of layoffs across dataset  
+
+#### Industry & Company Impact
+- Aggregated total layoffs by industry and company  
+- Identified most affected sectors and firms  
+
+#### Time-Series Trends
+- Analyzed yearly and monthly layoff patterns  
+- Identified peak periods using aggregated timelines  
+
+#### Ranking Analysis
+- Used `DENSE_RANK()` to identify top companies and industries per year  
+- Compared relative impact across time periods  
+
+#### Geographic Distribution
+- Analyzed country and city-level concentration of layoffs  
+- Measured regional contribution to global totals  
 
 
-## Key Findings
-* **Peak Volatility:** Although layoffs began in 2020, 2022 recorded the highest volume, indicating a delayed economic correction.
+## Technical Highlights
 
-* **Industry Drivers:** Consumer and Retail sectors saw the highest overall layoffs. Among individual companies, Amazon led in total layoffs (18,150), followed by Google, Meta, Salesforce, and Microsoft. Google also recorded the largest single-day event (12,000 layoffs).
+- Built multi-stage data cleaning pipeline using staging tables  
+- Applied window functions for duplicate removal and ranking logic  
+- Used CTEs for structured, modular SQL analysis  
+- Performed hierarchical aggregations (company → industry → country)  
+- Designed reusable SQL queries for trend and ranking analysis  
 
-* **Geographic Concentration:** Layoffs were concentrated in key tech hubs, with a small number of cities contributing a significant share of national totals.
 
-* **Startup Mortality:** 116 companies (primarily well-funded startups) experienced 100% layoffs, indicating total liquidation despite substantial capital and funding.
+## Outcome
 
+The cleaned dataset enabled structured analysis of global workforce reductions and revealed clear macroeconomic patterns across industries and geographies.
 
----
+This project demonstrates the ability to:
+- Clean and structure raw datasets using SQL  
+- Perform exploratory and trend-based analysis  
+- Extract business-relevant insights from large datasets  
+- Communicate findings in a structured analytical format  
